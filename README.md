@@ -1,4 +1,4 @@
 Rename Files
 ============
 
-    deno task run --path='/folder/path' --prefix='number-' --suffix='-file' --extension='txt'
+    deno task run --path='/folder/path' --prefix='number_' --suffix='_file' --extension='txt'
