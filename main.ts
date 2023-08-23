@@ -1,4 +1,4 @@
-import { walk } from "https://deno.land/std/fs/mod.ts";
+import { walk } from "https://deno.land/std@0.199.0/fs/mod.ts";
 import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
 
 const renameFiles = async ({ path: directoryPath, prefix, suffix }: { path: string, prefix?: string, suffix?: string }) => {
