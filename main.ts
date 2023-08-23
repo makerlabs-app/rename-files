@@ -3,12 +3,12 @@ import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
 import { red, green } from "https://deno.land/std@0.199.0/fmt/colors.ts";
 
 const renameFiles = async ({
-                               path: directoryPath,
-                               prefix,
-                               suffix,
-                               extension,
-                               iteration
-                           }: {
+   path: directoryPath,
+   prefix,
+   suffix,
+   extension,
+   iteration
+}: {
     path: string;
     prefix?: string;
     suffix?: string;
