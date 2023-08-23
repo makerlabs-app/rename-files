@@ -16,7 +16,7 @@ No traditional installation is required since the script is run directly with De
 
 To use the tool, run the following command:
 
-    deno task run --path /your/directory
+    deno task run --path your/directory
 
 ## Options
 
@@ -30,7 +30,7 @@ To use the tool, run the following command:
 
 To rename files in the directory named sample-dir, starting the iteration from number 5, and adding a prefix of file_ with a new extension jpg, execute:
 
-    deno task run --path /your/directory --prefix file_ --extension jpg --iteration 5
+    deno task run --path your/directory --prefix file_ --extension jpg --iteration 5
 
 ## License
 
