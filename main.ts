@@ -1,36 +1,30 @@
-if (Deno.args.length < 1) {
-    console.error("Veuillez fournir le chemin du répertoire en tant qu'argument.");
-    Deno.exit(1);
-}
+import { walk } from "https://deno.land/std/fs/mod.ts";
+import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
 
-const directoryPath = Deno.args[0];
-const prefix = Deno.args[1] || "";
+const renameFiles = async ({ path: directoryPath, prefix, suffix }: { path: string, prefix?: string, suffix?: string }) => {
+    let counter = 1;
 
-async function renameFilesInDirectory(dirPath, filePrefix) {
-    let files = [];
+    for await (const entry of walk(directoryPath, { maxDepth: 1, includeDirs: false })) {
+        const extension = entry.path.substring(entry.path.lastIndexOf("."));
+        const tempName = `${self.crypto.randomUUID()}${counter}${extension}`;
 
-    for await (const dirEntry of Deno.readDir(dirPath)) {
-        if (dirEntry.isFile) {
-            files.push(dirEntry.name);
-        }
-    }
+        await Deno.rename(entry.path, `${directoryPath}/${tempName}`);
 
-    // Triez les fichiers par ordre alphabétique pour éviter des conflits
-    files.sort();
+        const newName = `${prefix || ""}${counter}${suffix || ""}${extension}`;
+        await Deno.rename(`${directoryPath}/${tempName}`, `${directoryPath}/${newName}`);
 
-    let count = 1;
-    for (const filename of files) {
-        const oldPath = `${dirPath}/${filename}`;
-        const extension = filename.split('.').pop();
-
-        const newName = `${filePrefix}${count}`;
-        const newPath = `${dirPath}/${newName}.${extension}`;
-        
-        if (oldPath !== newPath) {
-            await Deno.rename(oldPath, newPath);
-        }
-        count++;
+        counter++;
     }
 }
 
-renameFilesInDirectory(directoryPath, prefix);
+const cli = new Command()
+    .name("rename-files")
+    .description("Rename files in the given directory.")
+    .option("-p, --path <path:string>", "Path to the directory containing files to be renamed.")
+    .option("-x, --prefix [prefix:string]", "Optional prefix to add to the file names.")
+    .option("-s, --suffix [suffix:string]", "Optional suffix to add to the file names before the extension.")
+    .action(renameFiles);
+
+if (import.meta.main) {
+    await cli.parse(Deno.args);
+}
