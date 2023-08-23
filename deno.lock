@@ -19,6 +19,7 @@
     "https://deno.land/std@0.199.0/crypto/_wasm/mod.ts": "973058e70052c98292b567d1c8396dffc28d6dfc6a44f0763032f6fbdf5222f5",
     "https://deno.land/std@0.199.0/crypto/crypto.ts": "731dffeb3054ddca38e6279a6ad718abef0fb6e218639c496d1c208db70e55e4",
     "https://deno.land/std@0.199.0/crypto/timing_safe_equal.ts": "7b0a4d2ef1c17590e0ad6c0cb1776369d2ba80cd99e945005e117851690507fe",
+    "https://deno.land/std@0.199.0/fmt/colors.ts": "a7eecffdf3d1d54db890723b303847b6e0a1ab4b528ba6958b8f2e754cf1b3bc",
     "https://deno.land/std@0.199.0/fs/_util.ts": "fbf57dcdc9f7bc8128d60301eece608246971a7836a3bb1e78da75314f08b978",
     "https://deno.land/std@0.199.0/fs/copy.ts": "66edc2baea085afbe98d60b16ae93f4eef84fbf774b6d671e6ff2cfd52d4c860",
     "https://deno.land/std@0.199.0/fs/empty_dir.ts": "2e52cd4674d18e2e007175c80449fc3d263786a1361e858d9dfa9360a6581b47",
