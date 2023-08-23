@@ -13,7 +13,7 @@ const renameFiles = async ({
     extension?: string;
 }) => {
     let counter = 1;
-    const tempFiles: string[] = [];
+    const tempFiles: { oldName: string; tempName: string }[] = [];
 
     for await (const entry of walk(directoryPath, { maxDepth: 1, includeDirs: false })) {
         const lastDotIndex = entry.path.lastIndexOf(".");
@@ -22,17 +22,21 @@ const renameFiles = async ({
         if (lastDotIndex === -1) continue;
 
         const tempName = `${self.crypto.randomUUID()}${counter}${extension || entry.path.substring(lastDotIndex)}`;
-        tempFiles.push(tempName);
+
+        tempFiles.push({ oldName: entry.name, tempName });
 
         await Deno.rename(entry.path, `${directoryPath}/${tempName}`);
         counter++;
     }
 
     counter = 1;
-    for (const tempFile of tempFiles) {
-        const currentExtension = extension ? `.${extension}` : tempFile.substring(tempFile.lastIndexOf("."));
+    for (const { oldName, tempName } of tempFiles) {
+        const currentExtension = extension ? `.${extension}` : tempName.substring(tempName.lastIndexOf("."));
         const newName = `${prefix || ""}${counter}${suffix || ""}${currentExtension}`;
-        await Deno.rename(`${directoryPath}/${tempFile}`, `${directoryPath}/${newName}`);
+        await Deno.rename(`${directoryPath}/${tempName}`, `${directoryPath}/${newName}`);
+
+        console.log(`${oldName} -> ${newName}`);
+
         counter++;
     }
 }
