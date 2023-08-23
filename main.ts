@@ -1,8 +1,8 @@
-import { walk } from "https://deno.land/std@0.199.0/fs/mod.ts";
 import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
+import { walk } from "https://deno.land/std@0.199.0/fs/mod.ts";
 import { red, green } from "https://deno.land/std@0.199.0/fmt/colors.ts";
 
-const renameFiles = async ({
+export const renameFiles = async ({
    path: directoryPath,
    prefix,
    suffix,
