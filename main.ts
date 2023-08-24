@@ -2,35 +2,52 @@ import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
 import { walk } from "https://deno.land/std@0.199.0/fs/mod.ts";
 import { red, green, blue } from "https://deno.land/std@0.199.0/fmt/colors.ts";
 
-export const renameFiles = async ({
-  path: directoryPath,
-  prefix,
-  suffix,
-  extension,
-  iteration
-}: {
+// **1.** Logique métier
+export function determineNewFileName(oldName: string, counter: number, prefix?: string, suffix?: string, extension?: string): string {
+    const lastDotIndex = oldName.lastIndexOf(".");
+    const currentExtension = extension ? `.${extension}` : oldName.substring(lastDotIndex);
+    return `${prefix || ""}${counter}${suffix || ""}${currentExtension}`;
+}
+
+export function validateUserInput(input: string): boolean {
+    return ["yes", "y", "no", "n", ""].includes(input);
+}
+
+// **2.** Isoler les dépendances extérieures
+export async function* getFiles(directoryPath: string): AsyncGenerator<string> {
+    for await (const entry of walk(directoryPath, { maxDepth: 1, includeDirs: false })) {
+        if (entry.name.includes(".") && entry.name.lastIndexOf(".") !== entry.name.length - 1) {
+            yield entry.name;
+        }
+    }
+}
+
+export const renameOnDisk = async (oldPath: string, newPath: string) => {
+    await Deno.rename(oldPath, newPath);
+}
+
+// **3.** La logique principale
+export const renameFiles = async (options: {
     path: string;
     prefix?: string;
     suffix?: string;
     extension?: string;
     iteration?: number;
 }) => {
+    let { path: directoryPath, prefix, suffix, extension, iteration } = options;
+
     let counter = (iteration !== undefined) ? iteration : 1;
     const tempFiles: { oldName: string; tempName: string }[] = [];
 
-    console.log("Files in the directory:");
-    for await (const entry of walk(directoryPath, { maxDepth: 1, includeDirs: false })) {
-        const lastDotIndex = entry.path.lastIndexOf(".");
-        if (lastDotIndex === -1) continue; // Skip files without extensions
-
-        console.log(blue(entry.name));
+    for await (const fileName of getFiles(directoryPath)) {
+        console.log(blue(fileName));
     }
 
-    let answer = (prompt("Do you want to rename these files? (yes/y, no/n): ")?? "").toLowerCase();
+    let answer = (prompt("Do you want to rename these files? (yes/y, no/n): ") ?? "").toLowerCase();
 
-    while (answer !== "yes" && answer !== "y" && answer !== "no" && answer !== "n" && answer !== "") {
+    while (!validateUserInput(answer)) {
         console.log("Invalid input. Please enter 'yes', 'y', 'no', or 'n'.");
-        answer = (prompt("Do you want to rename these files? (yes/y, no/n): ")?? "").toLowerCase();
+        answer = (prompt("Do you want to rename these files? (yes/y, no/n): ") ?? "").toLowerCase();
     }
 
     if (answer === "no" || answer === "n" || answer === "") {
@@ -38,21 +55,17 @@ export const renameFiles = async ({
         return;
     }
 
-    for await (const entry of walk(directoryPath, { maxDepth: 1, includeDirs: false })) {
-        const lastDotIndex = entry.path.lastIndexOf(".");
-        if (lastDotIndex === -1) continue;
-
-        const tempName = `${self.crypto.randomUUID()}${counter}${extension || entry.path.substring(lastDotIndex)}`;
-        tempFiles.push({ oldName: entry.name, tempName });
-        await Deno.rename(entry.path, `${directoryPath}/${tempName}`);
+    for await (const oldName of getFiles(directoryPath)) {
+        const tempName = `${self.crypto.randomUUID()}${counter}${extension || oldName.substring(oldName.lastIndexOf("."))}`;
+        tempFiles.push({ oldName, tempName });
+        await renameOnDisk(`${directoryPath}/${oldName}`, `${directoryPath}/${tempName}`);
         counter++;
     }
 
     counter = (iteration !== undefined) ? iteration : 1;
     for (const { oldName, tempName } of tempFiles) {
-        const currentExtension = extension ? `.${extension}` : tempName.substring(tempName.lastIndexOf("."));
-        const newName = `${prefix || ""}${counter}${suffix || ""}${currentExtension}`;
-        await Deno.rename(`${directoryPath}/${tempName}`, `${directoryPath}/${newName}`);
+        const newName = determineNewFileName(oldName, counter, prefix, suffix, extension);
+        await renameOnDisk(`${directoryPath}/${tempName}`, `${directoryPath}/${newName}`);
         console.log(`${red(oldName)} -> ${green(newName)}`);
         counter++;
     }
