@@ -26,9 +26,14 @@ export const renameFiles = async ({
         console.log(blue(entry.name));
     }
 
-    const answer = prompt("Do you want to rename these files? (yes, no): ").toLowerCase();
+    let answer = (prompt("Do you want to rename these files? (yes/y, no/n): ")?? "").toLowerCase();
 
-    if (answer !== "yes" && answer !== "y") {
+    while (answer !== "yes" && answer !== "y" && answer !== "no" && answer !== "n" && answer !== "") {
+        console.log("Invalid input. Please enter 'yes', 'y', 'no', or 'n'.");
+        answer = (prompt("Do you want to rename these files? (yes/y, no/n): ")?? "").toLowerCase();
+    }
+
+    if (answer === "no" || answer === "n" || answer === "") {
         console.log("Aborted!");
         return;
     }
