@@ -9,12 +9,12 @@ export function determineNewFileName(oldName: string, counter: number, prefix?: 
     return `${prefix || ""}${counter}${suffix || ""}${currentExtension}`;
 }
 
-export function validateUserInput(input: string): boolean {
+function validateUserInput(input: string): boolean {
     return ["yes", "y", "no", "n", ""].includes(input);
 }
 
 // **2.** Insulate external dependencies
-export async function* getFiles(directoryPath: string): AsyncGenerator<string> {
+async function* getFiles(directoryPath: string): AsyncGenerator<string> {
     for await (const entry of walk(directoryPath, { maxDepth: 1, includeDirs: false })) {
         if (entry.name.includes(".") && entry.name.lastIndexOf(".") !== entry.name.length - 1) {
             yield entry.name;
@@ -22,7 +22,7 @@ export async function* getFiles(directoryPath: string): AsyncGenerator<string> {
     }
 }
 
-export const renameOnDisk = async (oldPath: string, newPath: string) => {
+const renameOnDisk = async (oldPath: string, newPath: string) => {
     await Deno.rename(oldPath, newPath);
 }
 
