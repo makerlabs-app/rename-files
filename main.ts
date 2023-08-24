@@ -1,13 +1,13 @@
 import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
 import { walk } from "https://deno.land/std@0.199.0/fs/mod.ts";
-import { red, green } from "https://deno.land/std@0.199.0/fmt/colors.ts";
+import { red, green, blue } from "https://deno.land/std@0.199.0/fmt/colors.ts";
 
 export const renameFiles = async ({
-   path: directoryPath,
-   prefix,
-   suffix,
-   extension,
-   iteration
+  path: directoryPath,
+  prefix,
+  suffix,
+  extension,
+  iteration
 }: {
     path: string;
     prefix?: string;
@@ -15,19 +15,30 @@ export const renameFiles = async ({
     extension?: string;
     iteration?: number;
 }) => {
-    let counter = (iteration !== undefined) ? iteration : 1;  // Use the given iteration value or default to 1
+    let counter = (iteration !== undefined) ? iteration : 1;
     const tempFiles: { oldName: string; tempName: string }[] = [];
+
+    console.log("Files in the directory:");
+    for await (const entry of walk(directoryPath, { maxDepth: 1, includeDirs: false })) {
+        const lastDotIndex = entry.path.lastIndexOf(".");
+        if (lastDotIndex === -1) continue; // Skip files without extensions
+
+        console.log(blue(entry.name));
+    }
+
+    const answer = prompt("Do you want to rename these files? (yes, no): ").toLowerCase();
+
+    if (answer !== "yes" && answer !== "y") {
+        console.log("Aborted!");
+        return;
+    }
 
     for await (const entry of walk(directoryPath, { maxDepth: 1, includeDirs: false })) {
         const lastDotIndex = entry.path.lastIndexOf(".");
-
-        // If the file has no extension, skip it.
         if (lastDotIndex === -1) continue;
 
         const tempName = `${self.crypto.randomUUID()}${counter}${extension || entry.path.substring(lastDotIndex)}`;
-
         tempFiles.push({ oldName: entry.name, tempName });
-
         await Deno.rename(entry.path, `${directoryPath}/${tempName}`);
         counter++;
     }
@@ -37,9 +48,7 @@ export const renameFiles = async ({
         const currentExtension = extension ? `.${extension}` : tempName.substring(tempName.lastIndexOf("."));
         const newName = `${prefix || ""}${counter}${suffix || ""}${currentExtension}`;
         await Deno.rename(`${directoryPath}/${tempName}`, `${directoryPath}/${newName}`);
-
         console.log(`${red(oldName)} -> ${green(newName)}`);
-
         counter++;
     }
 }
@@ -57,4 +66,3 @@ const cli = new Command()
 if (import.meta.main) {
     await cli.parse(Deno.args);
 }
-
