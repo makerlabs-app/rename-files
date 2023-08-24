@@ -37,6 +37,10 @@ To rename files in the directory named sample-dir, starting the iteration from n
 #### Remote usage
     deno run --allow-read --allow-write https://raw.githubusercontent.com/makerlabs-app/rename-files/v0.0.1/main.ts -a='files' -p=the_ -s=_test -e=txt -i=2
 
+## Run tests
+    
+    deno test
+
 ## License
 
 This software is distributed under the MIT license.

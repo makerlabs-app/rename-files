@@ -1,8 +1,8 @@
 import { assertEquals } from "https://deno.land/std@0.199.0/assert/mod.ts";
-import { renameFiles } from "./main.ts";  // Modify the path accordingly
+import { renameFiles } from "./main.ts";
 
 Deno.test("Should rename files with prefix", async () => {
-  const testDir = "./test-directory";
+  const testDir = "./test";
   await renameFiles({ path: testDir, prefix: "test_" });
 
   // Here we are assuming that your directory has a known file structure for testing.
@@ -13,7 +13,7 @@ Deno.test("Should rename files with prefix", async () => {
 });
 
 Deno.test("Should rename files with new extension", async () => {
-  const testDir = "./test-directory";
+  const testDir = "./test";
   await renameFiles({ path: testDir, extension: "test" });
 
   const files = [...Deno.readDirSync(testDir)];
@@ -23,7 +23,7 @@ Deno.test("Should rename files with new extension", async () => {
 });
 
 Deno.test("Should start renaming from specific iteration", async () => {
-  const testDir = "./test-directory";
+  const testDir = "./test";
   await renameFiles({ path: testDir, iteration: 5 });
 
   const files = [...Deno.readDirSync(testDir)];
@@ -34,6 +34,3 @@ Deno.test("Should start renaming from specific iteration", async () => {
 
   assertEquals(numberFromName >= 5, true);
 });
-
-// ... add more tests as necessary
-
