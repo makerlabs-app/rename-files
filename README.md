@@ -10,7 +10,8 @@ This is a simple Deno-based command line tool that lets you rename files in a gi
 
 ## Installation
 
-No traditional installation is required since the script is run directly with Deno. However, you need to clone the repository to get started:
+No traditional installation is required since the script is run directly with Deno. 
+You can clone the repository to get started or you can run the script remotely. 
 
 ## Usage
 
@@ -31,7 +32,7 @@ To use the tool, run the following command:
 To rename files in the directory named sample-dir, starting the iteration from number 5, and adding a prefix of file_ with a new extension jpg, execute:
 
 #### Locale usage
-    deno task run --path your/directory --prefix file_ --extension jpg --iteration 5
+    deno task run --path your/directory --prefix file_ --suffix _end --extension jpg --iteration 5
     
 #### Remote usage
     deno run --allow-read --allow-write https://raw.githubusercontent.com/makerlabs-app/rename-files/v0.0.1/main.ts -a='files' -p=the_ -s=_test -e=txt -i=2
