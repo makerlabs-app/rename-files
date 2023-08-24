@@ -15,7 +15,7 @@ export const renameFiles = async ({
     extension?: string;
     iteration?: number;
 }) => {
-    let counter = iteration || 1;  // Use the given iteration value or default to 1
+    let counter = (iteration !== undefined) ? iteration : 1;  // Use the given iteration value or default to 1
     const tempFiles: { oldName: string; tempName: string }[] = [];
 
     for await (const entry of walk(directoryPath, { maxDepth: 1, includeDirs: false })) {
@@ -32,7 +32,7 @@ export const renameFiles = async ({
         counter++;
     }
 
-    counter = iteration || 1;
+    counter = (iteration !== undefined) ? iteration : 1;
     for (const { oldName, tempName } of tempFiles) {
         const currentExtension = extension ? `.${extension}` : tempName.substring(tempName.lastIndexOf("."));
         const newName = `${prefix || ""}${counter}${suffix || ""}${currentExtension}`;
